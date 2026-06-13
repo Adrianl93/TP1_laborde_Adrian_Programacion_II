@@ -4,8 +4,10 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 5f;
-    [SerializeField] private float sprintMultiplier = 1.5f;
+    [SerializeField] private float sprintMultiplier = 1.75f;
     [SerializeField] private float rotationSpeed = 10f;
+    [SerializeField] private float sprintCostPerSecond = 10f;
+    [SerializeField] private float staminaRegenPerSecond = 15f;
 
     private CharacterController controller;
 

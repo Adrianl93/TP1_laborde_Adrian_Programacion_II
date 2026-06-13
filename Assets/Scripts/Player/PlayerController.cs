@@ -7,6 +7,10 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(PlayerDash))]
 public class PlayerController : NetworkBehaviour
 {
+    [Header("Stamina")]
+    [SerializeField] private float sprintCostPerSecond = 10f;
+    [SerializeField] private float staminaRegenPerSecond = 15f;
+
     private PlayerInputActions inputActions;
 
     private PlayerMovement movement;
@@ -64,7 +68,25 @@ public class PlayerController : NetworkBehaviour
 
     private void Update()
     {
-        movement.Move(moveInput, sprintPressed);
+        bool canSprint =
+            sprintPressed &&
+            stamina.HasEnough(
+                sprintCostPerSecond * Time.deltaTime);
+
+        movement.Move(
+            moveInput,
+            canSprint);
+
+        if (canSprint)
+        {
+            stamina.Consume(
+                sprintCostPerSecond * Time.deltaTime);
+        }
+        else
+        {
+            stamina.Regenerate(
+                staminaRegenPerSecond);
+        }
 
         if (dashPressed)
         {
