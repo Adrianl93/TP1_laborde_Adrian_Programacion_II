@@ -147,6 +147,7 @@ GameObject:
   - component: {fileID: 171273548740983969}
   - component: {fileID: 461476272330126770}
   - component: {fileID: 5862631514716371653}
+  - component: {fileID: 1334413893672367625}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -377,8 +378,6 @@ MonoBehaviour:
   moveSpeed: 5
   sprintMultiplier: 1.5
   rotationSpeed: 10
-  sprintCostPerSecond: 10
-  staminaRegenPerSecond: 15
 --- !u!114 &8993455159540006566
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -432,6 +431,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d964d189d4ab2a468930f85c52e6f12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemPickup
+  ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &1334413893672367625
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1760675356381756166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ed031c73abea9547bd628080044202d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerScore
   ShowTopMostFoldoutHeaderGroup: 1
 --- !u!1 &1948611394754230278
 GameObject:

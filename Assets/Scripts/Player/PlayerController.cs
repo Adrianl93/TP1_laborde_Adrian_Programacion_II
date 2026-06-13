@@ -68,6 +68,8 @@ public class PlayerController : NetworkBehaviour
 
     private void Update()
     {
+        if (!IsOwner)
+            return;
         bool canSprint =
             sprintPressed &&
             stamina.HasEnough(
@@ -117,5 +119,25 @@ public class PlayerController : NetworkBehaviour
     private void OnDashPerformed(InputAction.CallbackContext context)
     {
         dashPressed = true;
+    }
+
+    public override void OnDestroy()
+    {
+        if (inputActions != null)
+        {
+            inputActions.Player.Move.performed -= OnMove;
+            inputActions.Player.Move.canceled -= OnMove;
+
+            inputActions.Player.Sprint.performed -= OnSprintPerformed;
+            inputActions.Player.Sprint.canceled -= OnSprintCanceled;
+
+            inputActions.Player.Dash.performed -= OnDashPerformed;
+
+            inputActions.Player.Disable();
+            inputActions.UI.Disable();
+            inputActions.Disable();
+        }
+
+        base.OnDestroy();
     }
 }

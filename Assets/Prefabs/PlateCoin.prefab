@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &3686557246665494623
+--- !u!1001 &306534940463152943
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -10,15 +10,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1826043064467759298, guid: e74df661cbbba8b449a3e18cbf9d72f9, type: 3}
       propertyPath: value
-      value: 5
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4528476245523116878, guid: e74df661cbbba8b449a3e18cbf9d72f9, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 1038232863
+      value: 3445827157
       objectReference: {fileID: 0}
     - target: {fileID: 7139513125318591973, guid: e74df661cbbba8b449a3e18cbf9d72f9, type: 3}
       propertyPath: m_Name
-      value: GoldCoin
+      value: PlateCoin
       objectReference: {fileID: 0}
     - target: {fileID: 8821409252485331860, guid: e74df661cbbba8b449a3e18cbf9d72f9, type: 3}
       propertyPath: m_LocalPosition.x
