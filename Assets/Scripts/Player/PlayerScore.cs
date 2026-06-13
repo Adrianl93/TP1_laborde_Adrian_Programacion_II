@@ -17,5 +17,10 @@ public class PlayerScore : NetworkBehaviour
 
         Debug.Log(
             $"Jugador {OwnerClientId} tiene {score.Value} puntos");
+
+        MatchManager.Instance
+            .CheckScoreVictory(
+                OwnerClientId,
+                score.Value);
     }
 }

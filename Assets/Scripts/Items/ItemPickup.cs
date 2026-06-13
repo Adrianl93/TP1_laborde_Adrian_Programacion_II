@@ -50,6 +50,11 @@ public class ItemPickup : NetworkBehaviour
         if (!inventory.PickupItem(item.Value))
             return;
 
+        // Avisar al CoinSpawner qué SpawnPoint quedó libre
+        CoinSpawner.Instance.NotifyCoinCollected(
+            item.GetSpawnPointIndex());
+
+        // Eliminar moneda de la red
         networkObject.Despawn(true);
 
         Debug.Log(

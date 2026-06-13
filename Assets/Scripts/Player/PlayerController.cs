@@ -70,6 +70,11 @@ public class PlayerController : NetworkBehaviour
     {
         if (!IsOwner)
             return;
+
+        if (MatchManager.Instance != null &&
+       MatchManager.Instance.MatchEnded)
+            return;
+
         bool canSprint =
             sprintPressed &&
             stamina.HasEnough(
