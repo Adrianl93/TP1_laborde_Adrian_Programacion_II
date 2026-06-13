@@ -50,7 +50,7 @@ public class ItemPickup : NetworkBehaviour
         if (!inventory.PickupItem(item.Value))
             return;
 
-        networkObject.Despawn(false);
+        networkObject.Despawn(true);
 
         Debug.Log(
             $"Jugador {OwnerClientId} recogió un objeto");

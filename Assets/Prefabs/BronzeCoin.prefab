@@ -8,9 +8,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4528476245523116878, guid: e74df661cbbba8b449a3e18cbf9d72f9, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 896155644
+      objectReference: {fileID: 0}
+    - target: {fileID: 5835682594908288054, guid: e74df661cbbba8b449a3e18cbf9d72f9, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 2304b7aca1fb9254f9b1e05574c802b9, type: 2}
     - target: {fileID: 7139513125318591973, guid: e74df661cbbba8b449a3e18cbf9d72f9, type: 3}
       propertyPath: m_Name
-      value: Coin
+      value: BronzeCoin
       objectReference: {fileID: 0}
     - target: {fileID: 8821409252485331860, guid: e74df661cbbba8b449a3e18cbf9d72f9, type: 3}
       propertyPath: m_LocalPosition.x
@@ -22,7 +30,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8821409252485331860, guid: e74df661cbbba8b449a3e18cbf9d72f9, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0.47
       objectReference: {fileID: 0}
     - target: {fileID: 8821409252485331860, guid: e74df661cbbba8b449a3e18cbf9d72f9, type: 3}
       propertyPath: m_LocalRotation.w

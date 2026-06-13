@@ -16,6 +16,10 @@ PrefabInstance:
       propertyPath: GlobalObjectIdHash
       value: 3445827157
       objectReference: {fileID: 0}
+    - target: {fileID: 5835682594908288054, guid: e74df661cbbba8b449a3e18cbf9d72f9, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: e35764e4143ce154990cf5d95f6b3849, type: 2}
     - target: {fileID: 7139513125318591973, guid: e74df661cbbba8b449a3e18cbf9d72f9, type: 3}
       propertyPath: m_Name
       value: PlateCoin
@@ -30,7 +34,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8821409252485331860, guid: e74df661cbbba8b449a3e18cbf9d72f9, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0.47
       objectReference: {fileID: 0}
     - target: {fileID: 8821409252485331860, guid: e74df661cbbba8b449a3e18cbf9d72f9, type: 3}
       propertyPath: m_LocalRotation.w

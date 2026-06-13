@@ -60,6 +60,7 @@ public class PlayerInventory : NetworkBehaviour
 
     public int DeliverItem()
     {
+        Debug.Log($"DeliverItem - IsServer: {IsServer}");
         if (!IsServer)
             return 0;
 

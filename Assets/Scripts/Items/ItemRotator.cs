@@ -7,7 +7,7 @@ public class ItemRotator : MonoBehaviour
     private void Update()
     {
         transform.Rotate(
-            Vector3.up,
+            Vector3.forward,
             rotationSpeed * Time.deltaTime,
             Space.World);
     }
