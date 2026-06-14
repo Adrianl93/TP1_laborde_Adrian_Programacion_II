@@ -148,6 +148,7 @@ GameObject:
   - component: {fileID: 461476272330126770}
   - component: {fileID: 5862631514716371653}
   - component: {fileID: 1334413893672367625}
+  - component: {fileID: 8716130473953809398}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -445,6 +446,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerScore
   ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &8716130473953809398
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1760675356381756166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf554850e98b17e4e8b7033bfd7258ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerVisual
+  ShowTopMostFoldoutHeaderGroup: 1
+  meshRenderer: {fileID: 4366611712315879216}
+  hostMaterial: {fileID: 2100000, guid: 19a90fdba70be5d48949312d35051ad5, type: 2}
+  clientMaterial: {fileID: 2100000, guid: 49804767a1f14e141985ed24f032a5a0, type: 2}
 --- !u!1 &1948611394754230278
 GameObject:
   m_ObjectHideFlags: 0

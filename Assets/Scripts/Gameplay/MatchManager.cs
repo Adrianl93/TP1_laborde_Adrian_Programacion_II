@@ -6,17 +6,27 @@ public class MatchManager : NetworkBehaviour
     [Header("Match Settings")]
     [SerializeField] private float matchDuration = 120f;
     [SerializeField] private int targetScore = 50;
+    [SerializeField] private float countdownDuration = 3f;
 
     private NetworkVariable<float> remainingTime =
         new NetworkVariable<float>();
 
-    private NetworkVariable<bool> matchEnded =
-        new NetworkVariable<bool>(false);
+    private NetworkVariable<float> countdownTime =
+        new NetworkVariable<float>();
+
+    private NetworkVariable<MatchState> matchState =
+        new NetworkVariable<MatchState>(
+            MatchState.WaitingForPlayers);
 
     public float RemainingTime => remainingTime.Value;
-    public bool MatchEnded => matchEnded.Value;
+    public float CountdownTime => countdownTime.Value;
+    public MatchState CurrentState => matchState.Value;
 
-    public static MatchManager Instance { get; private set; }
+    public static MatchManager Instance
+    {
+        get;
+        private set;
+    }
 
     private void Awake()
     {
@@ -25,10 +35,14 @@ public class MatchManager : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        if (IsServer)
-        {
-            remainingTime.Value = matchDuration;
-        }
+        if (!IsServer)
+            return;
+
+        remainingTime.Value = matchDuration;
+        countdownTime.Value = countdownDuration;
+
+        matchState.Value =
+            MatchState.WaitingForPlayers;
     }
 
     private void Update()
@@ -36,16 +50,73 @@ public class MatchManager : NetworkBehaviour
         if (!IsServer)
             return;
 
-        if (matchEnded.Value)
-            return;
+        switch (matchState.Value)
+        {
+            case MatchState.WaitingForPlayers:
+                UpdateWaitingPlayers();
+                break;
 
+            case MatchState.Countdown:
+                UpdateCountdown();
+                break;
+
+            case MatchState.Playing:
+                UpdatePlaying();
+                break;
+        }
+    }
+
+    private void UpdateWaitingPlayers()
+    {
+        int connectedPlayers =
+            NetworkManager.Singleton
+                .ConnectedClientsList.Count;
+
+        if (connectedPlayers >= 2)
+        {
+            countdownTime.Value =
+                countdownDuration;
+
+            matchState.Value =
+                MatchState.Countdown;
+
+            Debug.Log(
+                "Dos jugadores conectados. Iniciando cuenta regresiva.");
+        }
+    }
+
+    private void UpdateCountdown()
+    {
+        countdownTime.Value -= Time.deltaTime;
+
+        if (countdownTime.Value <= 0f)
+        {
+            countdownTime.Value = 0f;
+
+            matchState.Value =
+                MatchState.Playing;
+
+            Debug.Log(
+                "¡Comienza la partida!");
+        }
+    }
+
+    private void UpdatePlaying()
+    {
         remainingTime.Value -= Time.deltaTime;
 
         if (remainingTime.Value <= 0f)
         {
             remainingTime.Value = 0f;
+
             EndMatch();
         }
+    }
+
+    public bool IsMatchActive()
+    {
+        return matchState.Value ==
+               MatchState.Playing;
     }
 
     public void CheckScoreVictory(
@@ -55,8 +126,11 @@ public class MatchManager : NetworkBehaviour
         if (!IsServer)
             return;
 
-        if (matchEnded.Value)
+        if (matchState.Value !=
+            MatchState.Playing)
+        {
             return;
+        }
 
         if (currentScore >= targetScore)
         {
@@ -69,9 +143,17 @@ public class MatchManager : NetworkBehaviour
 
     private void EndMatch()
     {
-        matchEnded.Value = true;
+        if (matchState.Value ==
+            MatchState.Finished)
+        {
+            return;
+        }
 
-        Debug.Log("PARTIDA FINALIZADA");
+        matchState.Value =
+            MatchState.Finished;
+
+        Debug.Log(
+            "PARTIDA FINALIZADA");
 
         AnnounceWinner();
     }
@@ -83,6 +165,7 @@ public class MatchManager : NetworkBehaviour
                 FindObjectsSortMode.None);
 
         PlayerScore winner = null;
+
         int highestScore = -1;
         bool tie = false;
 

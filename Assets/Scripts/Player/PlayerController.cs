@@ -33,6 +33,19 @@ public class PlayerController : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        if (PlayerSpawnManager.Instance != null)
+        {
+            transform.position =
+                PlayerSpawnManager.Instance
+                    .GetSpawnPosition(
+                        OwnerClientId);
+        }
+        else
+        {
+            Debug.LogWarning(
+                "No se encontró PlayerSpawnManager en la escena.");
+        }
+
         if (!IsOwner)
         {
             enabled = false;
@@ -71,8 +84,10 @@ public class PlayerController : NetworkBehaviour
         if (!IsOwner)
             return;
 
-        if (MatchManager.Instance != null &&
-       MatchManager.Instance.MatchEnded)
+        if (MatchManager.Instance == null)
+            return;
+
+        if (!MatchManager.Instance.IsMatchActive())
             return;
 
         bool canSprint =
