@@ -33,6 +33,8 @@ public class PlayerController : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        Debug.Log(
+    $"Player spawn en escena: {gameObject.scene.name}");
         if (PlayerSpawnManager.Instance != null)
         {
             transform.position =
@@ -77,6 +79,7 @@ public class PlayerController : NetworkBehaviour
         inputActions.Player.Dash.performed -= OnDashPerformed;
 
         inputActions.Disable();
+
     }
 
     private void Update()
