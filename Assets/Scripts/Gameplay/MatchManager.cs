@@ -36,7 +36,6 @@ public class MatchManager : NetworkBehaviour
     public bool IsTie =>
         isTie.Value;
 
-    // Esta propiedad es la que utilizará EndMatchUI
     public NetworkVariable<MatchState> MatchStateNetwork =>
         matchState;
 
@@ -164,6 +163,81 @@ public class MatchManager : NetworkBehaviour
                 $"Jugador {playerId} alcanzó {targetScore} puntos");
 
             EndMatch();
+        }
+    }
+
+    public void RestartMatch()
+    {
+        if (!IsServer)
+            return;
+
+        winnerPlayerId.Value = -1;
+        isTie.Value = false;
+
+        remainingTime.Value =
+            matchDuration;
+
+        countdownTime.Value =
+            countdownDuration;
+
+        ResetPlayers();
+
+        matchState.Value =
+            MatchState.Countdown;
+
+        Debug.Log(
+            "Partida reiniciada");
+    }
+
+    private void ResetPlayers()
+    {
+        PlayerScore[] scores =
+            FindObjectsByType<PlayerScore>(
+                FindObjectsSortMode.None);
+
+        foreach (PlayerScore score in scores)
+        {
+            score.ResetScore();
+
+            PlayerInventory inventory =
+                score.GetComponent<PlayerInventory>();
+
+            if (inventory != null)
+            {
+                inventory.ResetInventory();
+            }
+
+            PlayerStamina stamina =
+                score.GetComponent<PlayerStamina>();
+
+            if (stamina != null)
+            {
+                stamina.ResetStamina();
+            }
+
+            Vector3 spawnPosition =
+                PlayerSpawnManager.Instance
+                    .GetSpawnPosition(
+                        score.OwnerClientId);
+
+            CharacterController controller =
+                score.GetComponent<CharacterController>();
+
+            if (controller != null)
+            {
+                controller.enabled = false;
+            }
+
+            score.transform.position =
+                spawnPosition;
+
+            score.transform.rotation =
+                Quaternion.identity;
+
+            if (controller != null)
+            {
+                controller.enabled = true;
+            }
         }
     }
 

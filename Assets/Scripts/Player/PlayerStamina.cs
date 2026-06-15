@@ -39,4 +39,9 @@ public class PlayerStamina : MonoBehaviour
                 0f,
                 maxStamina);
     }
+
+    public void ResetStamina()
+    {
+        currentStamina = maxStamina;
+    }
 }

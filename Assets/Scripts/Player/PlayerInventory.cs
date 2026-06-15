@@ -74,4 +74,13 @@ public class PlayerInventory : NetworkBehaviour
 
         return value;
     }
+
+    public void ResetInventory()
+    {
+        if (!IsServer)
+            return;
+
+        hasItem.Value = false;
+        carriedValue.Value = 0;
+    }
 }

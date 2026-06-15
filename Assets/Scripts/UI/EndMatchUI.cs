@@ -114,7 +114,7 @@ public class EndMatchUI : MonoBehaviour
         else
         {
             winnerText.text =
-                $"Winner: Player {MatchManager.Instance.WinnerPlayerId + 2}";
+                $"Winner: Player {MatchManager.Instance.WinnerPlayerId + 1}";
         }
     }
 

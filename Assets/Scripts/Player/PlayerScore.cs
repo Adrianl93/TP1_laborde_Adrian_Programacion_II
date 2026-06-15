@@ -25,4 +25,12 @@ public class PlayerScore : NetworkBehaviour
                 OwnerClientId,
                 score.Value);
     }
+
+    public void ResetScore()
+    {
+        if (!IsServer)
+            return;
+
+        score.Value = 0;
+    }
 }
