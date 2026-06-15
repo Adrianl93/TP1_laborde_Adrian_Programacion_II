@@ -1825,7 +1825,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MatchManager
   ShowTopMostFoldoutHeaderGroup: 1
-  matchDuration: 120
+  matchDuration: 20
   targetScore: 50
   countdownDuration: 3
 --- !u!1 &752216578
@@ -5110,9 +5110,9 @@ SceneRoots:
   - {fileID: 1953967084}
   - {fileID: 25224037}
   - {fileID: 1958476128}
+  - {fileID: 717523992}
   - {fileID: 1357474824}
   - {fileID: 1410582929}
-  - {fileID: 717523992}
   - {fileID: 871650485}
   - {fileID: 568051440}
   - {fileID: 909037090}
