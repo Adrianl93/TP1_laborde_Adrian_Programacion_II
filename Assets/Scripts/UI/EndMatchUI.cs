@@ -75,20 +75,24 @@ public class EndMatchUI : MonoBehaviour
         MatchState previousState,
         MatchState newState)
     {
-        if (newState != MatchState.Finished)
-            return;
-
-        ShowResults();
+        if (newState == MatchState.Finished)
+        {
+            ShowResults();
+        }
+        else
+        {
+            panel.SetActive(false);
+        }
     }
 
     private void ShowResults()
     {
         panel.SetActive(true);
+
         replayButton.interactable =
-        NetworkManager.Singleton.IsHost;
+            NetworkManager.Singleton.IsHost;
 
         PlayerScore[] scores =
-
             FindObjectsByType<PlayerScore>(
                 FindObjectsSortMode.None);
 
@@ -123,11 +127,8 @@ public class EndMatchUI : MonoBehaviour
         if (!NetworkManager.Singleton.IsHost)
             return;
 
-        NetworkManager.Singleton
-            .SceneManager
-            .LoadScene(
-                "GameScene",
-                LoadSceneMode.Single);
+        MatchManager.Instance
+            .RestartMatch();
     }
 
     private void ReturnToMenu()
