@@ -18,9 +18,27 @@ public class MatchManager : NetworkBehaviour
         new NetworkVariable<MatchState>(
             MatchState.WaitingForPlayers);
 
+    private NetworkVariable<int> winnerPlayerId =
+        new NetworkVariable<int>(-1);
+
+    private NetworkVariable<bool> isTie =
+        new NetworkVariable<bool>(false);
+
     public float RemainingTime => remainingTime.Value;
+
     public float CountdownTime => countdownTime.Value;
+
     public MatchState CurrentState => matchState.Value;
+
+    public int WinnerPlayerId =>
+        winnerPlayerId.Value;
+
+    public bool IsTie =>
+        isTie.Value;
+
+    // Esta propiedad es la que utilizará EndMatchUI
+    public NetworkVariable<MatchState> MatchStateNetwork =>
+        matchState;
 
     public static MatchManager Instance
     {
@@ -39,7 +57,13 @@ public class MatchManager : NetworkBehaviour
             return;
 
         remainingTime.Value = matchDuration;
-        countdownTime.Value = countdownDuration;
+
+        countdownTime.Value =
+            countdownDuration;
+
+        winnerPlayerId.Value = -1;
+
+        isTie.Value = false;
 
         matchState.Value =
             MatchState.WaitingForPlayers;
@@ -87,7 +111,8 @@ public class MatchManager : NetworkBehaviour
 
     private void UpdateCountdown()
     {
-        countdownTime.Value -= Time.deltaTime;
+        countdownTime.Value -=
+            Time.deltaTime;
 
         if (countdownTime.Value <= 0f)
         {
@@ -103,7 +128,8 @@ public class MatchManager : NetworkBehaviour
 
     private void UpdatePlaying()
     {
-        remainingTime.Value -= Time.deltaTime;
+        remainingTime.Value -=
+            Time.deltaTime;
 
         if (remainingTime.Value <= 0f)
         {
@@ -149,13 +175,13 @@ public class MatchManager : NetworkBehaviour
             return;
         }
 
+        AnnounceWinner();
+
         matchState.Value =
             MatchState.Finished;
 
         Debug.Log(
             "PARTIDA FINALIZADA");
-
-        AnnounceWinner();
     }
 
     private void AnnounceWinner()
@@ -167,17 +193,23 @@ public class MatchManager : NetworkBehaviour
         PlayerScore winner = null;
 
         int highestScore = -1;
+
         bool tie = false;
 
         foreach (PlayerScore score in scores)
         {
             if (score.Score > highestScore)
             {
-                highestScore = score.Score;
+                highestScore =
+                    score.Score;
+
                 winner = score;
+
                 tie = false;
             }
-            else if (score.Score == highestScore)
+            else if (
+                score.Score ==
+                highestScore)
             {
                 tie = true;
             }
@@ -185,12 +217,23 @@ public class MatchManager : NetworkBehaviour
 
         if (tie)
         {
-            Debug.Log("EMPATE");
+            isTie.Value = true;
+
+            winnerPlayerId.Value = -1;
+
+            Debug.Log(
+                "EMPATE");
+
             return;
         }
 
+        isTie.Value = false;
+
         if (winner != null)
         {
+            winnerPlayerId.Value =
+                (int)winner.OwnerClientId;
+
             Debug.Log(
                 $"GANADOR: Jugador {winner.OwnerClientId} con {winner.Score} puntos");
         }
