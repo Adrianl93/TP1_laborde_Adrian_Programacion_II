@@ -8,6 +8,8 @@ public class PlayerScore : NetworkBehaviour
 
     public int Score => score.Value;
 
+    public ulong PlayerId => OwnerClientId;
+
     public void AddPoints(int amount)
     {
         if (!IsServer)
