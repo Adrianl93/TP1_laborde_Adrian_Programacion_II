@@ -84,8 +84,11 @@ public class EndMatchUI : MonoBehaviour
     private void ShowResults()
     {
         panel.SetActive(true);
+        replayButton.interactable =
+        NetworkManager.Singleton.IsHost;
 
         PlayerScore[] scores =
+
             FindObjectsByType<PlayerScore>(
                 FindObjectsSortMode.None);
 
@@ -106,12 +109,12 @@ public class EndMatchUI : MonoBehaviour
         if (MatchManager.Instance.IsTie)
         {
             winnerText.text =
-                "EMPATE";
+                "It's a Tie";
         }
         else
         {
             winnerText.text =
-                $"GANADOR: JUGADOR {MatchManager.Instance.WinnerPlayerId + 1}";
+                $"Winner: Player {MatchManager.Instance.WinnerPlayerId + 2}";
         }
     }
 

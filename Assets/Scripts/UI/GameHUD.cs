@@ -65,7 +65,7 @@ public class GameHUD : MonoBehaviour
         int seconds = Mathf.FloorToInt(time % 60);
 
         timeText.text =
-            $"{minutes:00}:{seconds:00}";
+            $"Quedan {minutes:00}:{seconds:00}";
     }
 
     private void UpdateScores()
@@ -79,12 +79,12 @@ public class GameHUD : MonoBehaviour
             if (playerScore.PlayerId == 0)
             {
                 scoreP1Text.text =
-                    playerScore.Score.ToString();
+                    $"P1: { playerScore.Score.ToString()}pts";
             }
             else if (playerScore.PlayerId == 1)
             {
                 scoreP2Text.text =
-                    playerScore.Score.ToString();
+                    $"P2: {playerScore.Score.ToString()}pts";
             }
         }
     }
