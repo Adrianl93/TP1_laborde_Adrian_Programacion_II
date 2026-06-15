@@ -195,8 +195,14 @@ public class MatchManager : NetworkBehaviour
             FindObjectsByType<PlayerScore>(
                 FindObjectsSortMode.None);
 
+        Debug.Log(
+            $"ResetPlayers encontró {scores.Length} PlayerScore");
+
         foreach (PlayerScore score in scores)
         {
+            Debug.Log(
+                $"Procesando Player {score.OwnerClientId}");
+
             score.ResetScore();
 
             PlayerInventory inventory =
@@ -220,6 +226,12 @@ public class MatchManager : NetworkBehaviour
                     .GetSpawnPosition(
                         score.OwnerClientId);
 
+            Debug.Log(
+                $"Player {score.OwnerClientId} spawn calculado: {spawnPosition}");
+
+            Debug.Log(
+                $"Player {score.OwnerClientId} posición ANTES: {score.transform.position}");
+
             CharacterController controller =
                 score.GetComponent<CharacterController>();
 
@@ -233,6 +245,9 @@ public class MatchManager : NetworkBehaviour
 
             score.transform.rotation =
                 Quaternion.identity;
+
+            Debug.Log(
+                $"Player {score.OwnerClientId} posición DESPUÉS: {score.transform.position}");
 
             if (controller != null)
             {
