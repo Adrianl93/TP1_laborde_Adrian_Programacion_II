@@ -20,8 +20,6 @@ public class MainMenuManager : MonoBehaviour
     [Header("Network")]
     [SerializeField] private ushort port = 7777;
 
-    private string pendingClientIp;
-
     private void Start()
     {
         localIpText.text =
@@ -42,32 +40,10 @@ public class MainMenuManager : MonoBehaviour
 
         if (exitButton != null)
             exitButton.onClick.RemoveListener(ExitGame);
-
-        SceneManager.sceneLoaded -= OnHostSceneLoaded;
-        SceneManager.sceneLoaded -= OnClientSceneLoaded;
     }
 
     private void StartHost()
     {
-        Debug.Log("Cargando GameScene como Host...");
-
-        SceneManager.sceneLoaded += OnHostSceneLoaded;
-
-        SceneManager.LoadScene(
-            "GameScene",
-            LoadSceneMode.Single);
-    }
-
-    private void OnHostSceneLoaded(
-        Scene scene,
-        LoadSceneMode mode)
-    {
-        if (scene.name != "GameScene")
-            return;
-
-        SceneManager.sceneLoaded -=
-            OnHostSceneLoaded;
-
         UnityTransport transport =
             NetworkManager.Singleton
                 .GetComponent<UnityTransport>();
@@ -77,19 +53,22 @@ public class MainMenuManager : MonoBehaviour
             port);
 
         bool started =
-            NetworkManager.Singleton
-                .StartHost();
+            NetworkManager.Singleton.StartHost();
 
         if (!started)
         {
             Debug.LogError(
                 "No se pudo iniciar Host");
-
             return;
         }
 
         Debug.Log(
             $"HOST iniciado en puerto {port}");
+
+        NetworkManager.Singleton.SceneManager
+            .LoadScene(
+                "GameScene",
+                LoadSceneMode.Single);
     }
 
     private void StartClient()
@@ -101,55 +80,29 @@ public class MainMenuManager : MonoBehaviour
         {
             Debug.LogWarning(
                 "Debe ingresar una IP.");
-
             return;
         }
-
-        pendingClientIp = ip;
-
-        Debug.Log(
-            $"Cargando GameScene para conectar a {ip}");
-
-        SceneManager.sceneLoaded +=
-            OnClientSceneLoaded;
-
-        SceneManager.LoadScene(
-            "GameScene",
-            LoadSceneMode.Single);
-    }
-
-    private void OnClientSceneLoaded(
-        Scene scene,
-        LoadSceneMode mode)
-    {
-        if (scene.name != "GameScene")
-            return;
-
-        SceneManager.sceneLoaded -=
-            OnClientSceneLoaded;
 
         UnityTransport transport =
             NetworkManager.Singleton
                 .GetComponent<UnityTransport>();
 
         transport.SetConnectionData(
-            pendingClientIp,
+            ip,
             port);
 
         bool started =
-            NetworkManager.Singleton
-                .StartClient();
+            NetworkManager.Singleton.StartClient();
 
         if (!started)
         {
             Debug.LogError(
                 "No se pudo iniciar Cliente");
-
             return;
         }
 
         Debug.Log(
-            $"Conectando a {pendingClientIp}:{port}");
+            $"Conectando a {ip}:{port}");
     }
 
     private void ExitGame()

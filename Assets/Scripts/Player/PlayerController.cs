@@ -1,3 +1,4 @@
+using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -34,19 +35,10 @@ public class PlayerController : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         Debug.Log(
-    $"Player spawn en escena: {gameObject.scene.name}");
-        if (PlayerSpawnManager.Instance != null)
-        {
-            transform.position =
-                PlayerSpawnManager.Instance
-                    .GetSpawnPosition(
-                        OwnerClientId);
-        }
-        else
-        {
-            Debug.LogWarning(
-                "No se encontró PlayerSpawnManager en la escena.");
-        }
+            $"Player spawn | ClientId={OwnerClientId} | IsOwner={IsOwner} | Escena={gameObject.scene.name}");
+
+        StartCoroutine(
+            WaitForSpawnManager());
 
         if (!IsOwner)
         {
@@ -65,6 +57,22 @@ public class PlayerController : NetworkBehaviour
         inputActions.Player.Dash.performed += OnDashPerformed;
     }
 
+    private IEnumerator WaitForSpawnManager()
+    {
+        while (PlayerSpawnManager.Instance == null)
+        {
+            yield return null;
+        }
+
+        transform.position =
+            PlayerSpawnManager.Instance
+                .GetSpawnPosition(
+                    OwnerClientId);
+
+        Debug.Log(
+            $"Jugador {OwnerClientId} movido al spawn correcto.");
+    }
+
     public override void OnNetworkDespawn()
     {
         if (!IsOwner)
@@ -79,7 +87,6 @@ public class PlayerController : NetworkBehaviour
         inputActions.Player.Dash.performed -= OnDashPerformed;
 
         inputActions.Disable();
-
     }
 
     private void Update()
