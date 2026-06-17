@@ -204,7 +204,8 @@ public class MatchManager : NetworkBehaviour
                 $"Procesando Player {score.OwnerClientId}");
 
             score.ResetScore();
-
+            Debug.Log(
+            $"PlayerScore Owner={score.OwnerClientId} Name={score.name}");
             PlayerInventory inventory =
                 score.GetComponent<PlayerInventory>();
 
