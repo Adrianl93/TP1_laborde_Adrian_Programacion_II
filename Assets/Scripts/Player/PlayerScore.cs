@@ -6,11 +6,39 @@ public class PlayerScore : NetworkBehaviour
     private NetworkVariable<int> score =
         new NetworkVariable<int>(0);
 
-    public int Score => score.Value;
+    private NetworkVariable<int> playerNumber =
+        new NetworkVariable<int>(0);
 
-    public ulong PlayerId => OwnerClientId;
+    public int Score =>
+        score.Value;
 
-    public void AddPoints(int amount)
+    public int PlayerNumber =>
+        playerNumber.Value;
+
+    public override void OnNetworkSpawn()
+    {
+        if (!IsServer)
+            return;
+
+        AssignPlayerNumber();
+    }
+
+    private void AssignPlayerNumber()
+    {
+        if (OwnerClientId == 0)
+        {
+            playerNumber.Value = 1;
+        }
+        else
+        {
+            playerNumber.Value = 2;
+        }
+
+        Debug.Log(
+            $"Player asignado -> ClientId={OwnerClientId} | PlayerNumber={playerNumber.Value}");
+    }
+
+    public void AddScore(int amount)
     {
         if (!IsServer)
             return;
@@ -18,12 +46,7 @@ public class PlayerScore : NetworkBehaviour
         score.Value += amount;
 
         Debug.Log(
-            $"Jugador {OwnerClientId} tiene {score.Value} puntos");
-
-        MatchManager.Instance
-            .CheckScoreVictory(
-                OwnerClientId,
-                score.Value);
+            $"Player {playerNumber.Value} ahora tiene {score.Value} puntos");
     }
 
     public void ResetScore()

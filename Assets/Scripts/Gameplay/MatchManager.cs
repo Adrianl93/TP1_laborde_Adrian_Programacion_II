@@ -5,7 +5,9 @@ public class MatchManager : NetworkBehaviour
 {
     [Header("Match Settings")]
     [SerializeField] private float matchDuration = 120f;
+
     [SerializeField] private int targetScore = 50;
+
     [SerializeField] private float countdownDuration = 3f;
 
     private NetworkVariable<float> remainingTime =
@@ -18,20 +20,23 @@ public class MatchManager : NetworkBehaviour
         new NetworkVariable<MatchState>(
             MatchState.WaitingForPlayers);
 
-    private NetworkVariable<int> winnerPlayerId =
+    private NetworkVariable<int> winnerPlayerNumber =
         new NetworkVariable<int>(-1);
 
     private NetworkVariable<bool> isTie =
         new NetworkVariable<bool>(false);
 
-    public float RemainingTime => remainingTime.Value;
+    public float RemainingTime =>
+        remainingTime.Value;
 
-    public float CountdownTime => countdownTime.Value;
+    public float CountdownTime =>
+        countdownTime.Value;
 
-    public MatchState CurrentState => matchState.Value;
+    public MatchState CurrentState =>
+        matchState.Value;
 
-    public int WinnerPlayerId =>
-        winnerPlayerId.Value;
+    public int WinnerPlayerNumber =>
+        winnerPlayerNumber.Value;
 
     public bool IsTie =>
         isTie.Value;
@@ -55,12 +60,13 @@ public class MatchManager : NetworkBehaviour
         if (!IsServer)
             return;
 
-        remainingTime.Value = matchDuration;
+        remainingTime.Value =
+            matchDuration;
 
         countdownTime.Value =
             countdownDuration;
 
-        winnerPlayerId.Value = -1;
+        winnerPlayerNumber.Value = -1;
 
         isTie.Value = false;
 
@@ -171,7 +177,11 @@ public class MatchManager : NetworkBehaviour
         if (!IsServer)
             return;
 
-        winnerPlayerId.Value = -1;
+        Debug.Log(
+            "===== RESTART MATCH =====");
+
+        winnerPlayerNumber.Value = -1;
+
         isTie.Value = false;
 
         remainingTime.Value =
@@ -201,11 +211,10 @@ public class MatchManager : NetworkBehaviour
         foreach (PlayerScore score in scores)
         {
             Debug.Log(
-                $"Procesando Player {score.OwnerClientId}");
+                $"Procesando PlayerNumber {score.PlayerNumber} | ClientId {score.OwnerClientId}");
 
             score.ResetScore();
-            Debug.Log(
-            $"PlayerScore Owner={score.OwnerClientId} Name={score.name}");
+
             PlayerInventory inventory =
                 score.GetComponent<PlayerInventory>();
 
@@ -228,31 +237,23 @@ public class MatchManager : NetworkBehaviour
                         score.OwnerClientId);
 
             Debug.Log(
-                $"Player {score.OwnerClientId} spawn calculado: {spawnPosition}");
+                $"Player {score.PlayerNumber} spawn calculado: {spawnPosition}");
 
-            Debug.Log(
-                $"Player {score.OwnerClientId} posición ANTES: {score.transform.position}");
-
-            CharacterController controller =
-                score.GetComponent<CharacterController>();
+            PlayerController controller =
+                score.GetComponent<PlayerController>();
 
             if (controller != null)
             {
-                controller.enabled = false;
+                controller.TeleportClientRpc(
+                    spawnPosition);
+
+                Debug.Log(
+                    $"Teleport enviado a Player {score.PlayerNumber}");
             }
-
-            score.transform.position =
-                spawnPosition;
-
-            score.transform.rotation =
-                Quaternion.identity;
-
-            Debug.Log(
-                $"Player {score.OwnerClientId} posición DESPUÉS: {score.transform.position}");
-
-            if (controller != null)
+            else
             {
-                controller.enabled = true;
+                Debug.LogError(
+                    $"Player {score.PlayerNumber} NO tiene PlayerController");
             }
         }
     }
@@ -271,7 +272,7 @@ public class MatchManager : NetworkBehaviour
             MatchState.Finished;
 
         Debug.Log(
-            "PARTIDA FINALIZADA");
+            $"PARTIDA FINALIZADA | Winner={winnerPlayerNumber.Value} | Tie={isTie.Value}");
     }
 
     private void AnnounceWinner()
@@ -288,6 +289,9 @@ public class MatchManager : NetworkBehaviour
 
         foreach (PlayerScore score in scores)
         {
+            Debug.Log(
+                $"Score detectado -> Player {score.PlayerNumber} = {score.Score}");
+
             if (score.Score > highestScore)
             {
                 highestScore =
@@ -309,7 +313,7 @@ public class MatchManager : NetworkBehaviour
         {
             isTie.Value = true;
 
-            winnerPlayerId.Value = -1;
+            winnerPlayerNumber.Value = -1;
 
             Debug.Log(
                 "EMPATE");
@@ -321,11 +325,22 @@ public class MatchManager : NetworkBehaviour
 
         if (winner != null)
         {
-            winnerPlayerId.Value =
-                (int)winner.OwnerClientId;
+            winnerPlayerNumber.Value =
+                winner.PlayerNumber;
 
             Debug.Log(
-                $"GANADOR: Jugador {winner.OwnerClientId} con {winner.Score} puntos");
+                $"GANADOR: Player {winner.PlayerNumber} con {winner.Score} puntos");
         }
+    }
+
+    private System.Collections.IEnumerator FinishMatchDelayed()
+    {
+        yield return null;
+
+        matchState.Value =
+            MatchState.Finished;
+
+        Debug.Log(
+            $"PARTIDA FINALIZADA | Winner={winnerPlayerNumber.Value} | Tie={isTie.Value}");
     }
 }

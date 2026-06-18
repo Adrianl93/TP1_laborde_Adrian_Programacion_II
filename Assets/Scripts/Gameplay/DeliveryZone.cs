@@ -21,7 +21,7 @@ public class DeliveryZone : MonoBehaviour
         if (deliveredValue <= 0)
             return;
 
-        score.AddPoints(deliveredValue);
+        score.AddScore(deliveredValue);
 
         Debug.Log(
             $"Objeto entregado. Valor: {deliveredValue}");

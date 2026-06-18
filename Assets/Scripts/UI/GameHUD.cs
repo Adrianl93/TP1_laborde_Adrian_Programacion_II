@@ -1,3 +1,5 @@
+using System.Net;
+using System.Net.Sockets;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
@@ -16,13 +18,21 @@ public class GameHUD : MonoBehaviour
 
     private PlayerStamina localPlayerStamina;
 
+    private bool searchingPlayer;
+
     private void Start()
     {
-        FindLocalPlayer();
+        UpdateHostIP();
     }
 
     private void Update()
     {
+        if (localPlayerStamina == null &&
+            !searchingPlayer)
+        {
+            FindLocalPlayer();
+        }
+
         UpdateTimer();
         UpdateScores();
         UpdateStamina();
@@ -30,27 +40,40 @@ public class GameHUD : MonoBehaviour
 
     private void FindLocalPlayer()
     {
+        searchingPlayer = true;
+
         NetworkObject[] players =
             FindObjectsByType<NetworkObject>(
                 FindObjectsSortMode.None);
 
         foreach (NetworkObject player in players)
         {
-            if (player.IsOwner)
-            {
-                localPlayerStamina =
-                    player.GetComponent<PlayerStamina>();
+            if (!player.IsOwner)
+                continue;
 
-                if (localPlayerStamina != null)
-                {
-                    staminaBar.minValue = 0f;
-                    staminaBar.maxValue =
-                        localPlayerStamina.MaxStamina;
-                }
+            PlayerStamina stamina =
+                player.GetComponent<PlayerStamina>();
 
-                break;
-            }
+            if (stamina == null)
+                continue;
+
+            localPlayerStamina = stamina;
+
+            staminaBar.minValue = 0f;
+
+            staminaBar.maxValue =
+                localPlayerStamina.MaxStamina;
+
+            staminaBar.value =
+                localPlayerStamina.CurrentStamina;
+
+            Debug.Log(
+                $"HUD asignado a Player {player.OwnerClientId}");
+
+            return;
         }
+
+        searchingPlayer = false;
     }
 
     private void UpdateTimer()
@@ -61,8 +84,11 @@ public class GameHUD : MonoBehaviour
         float time =
             MatchManager.Instance.RemainingTime;
 
-        int minutes = Mathf.FloorToInt(time / 60);
-        int seconds = Mathf.FloorToInt(time % 60);
+        int minutes =
+            Mathf.FloorToInt(time / 60);
+
+        int seconds =
+            Mathf.FloorToInt(time % 60);
 
         timeText.text =
             $"Quedan {minutes:00}:{seconds:00}";
@@ -74,17 +100,23 @@ public class GameHUD : MonoBehaviour
             FindObjectsByType<PlayerScore>(
                 FindObjectsSortMode.None);
 
+        scoreP1Text.text =
+            "P1: 0 pts";
+
+        scoreP2Text.text =
+            "P2: 0 pts";
+
         foreach (PlayerScore playerScore in scores)
         {
-            if (playerScore.PlayerId == 0)
+            if (playerScore.PlayerNumber == 1)
             {
                 scoreP1Text.text =
-                    $"P1: { playerScore.Score.ToString()}pts";
+                    $"P1: {playerScore.Score} pts";
             }
-            else if (playerScore.PlayerId == 1)
+            else if (playerScore.PlayerNumber == 2)
             {
                 scoreP2Text.text =
-                    $"P2: {playerScore.Score.ToString()}pts";
+                    $"P2: {playerScore.Score} pts";
             }
         }
     }
@@ -94,13 +126,39 @@ public class GameHUD : MonoBehaviour
         if (localPlayerStamina == null)
             return;
 
-        staminaBar.value =
-            localPlayerStamina.CurrentStamina /
+        staminaBar.maxValue =
             localPlayerStamina.MaxStamina;
+
+        staminaBar.value =
+            localPlayerStamina.CurrentStamina;
     }
 
-    public void SetHostIP(string ip)
+    private void UpdateHostIP()
     {
-        hostIPText.text = ip;
+        string localIP = "No IP";
+
+        try
+        {
+            var host =
+                Dns.GetHostEntry(
+                    Dns.GetHostName());
+
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily ==
+                    AddressFamily.InterNetwork)
+                {
+                    localIP = ip.ToString();
+                    break;
+                }
+            }
+        }
+        catch
+        {
+            localIP = "IP Error";
+        }
+
+        hostIPText.text =
+            $"Host: {localIP}:7777";
     }
 }

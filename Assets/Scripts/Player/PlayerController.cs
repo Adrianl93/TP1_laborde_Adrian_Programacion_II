@@ -9,7 +9,8 @@ using UnityEngine.InputSystem;
 public class PlayerController : NetworkBehaviour
 {
     [Header("Stamina")]
-    [SerializeField] private float sprintCostPerSecond = 10f;
+    [SerializeField] private float sprintCostPerSecond = 20f;
+
     [SerializeField] private float staminaRegenPerSecond = 15f;
 
     private PlayerInputActions inputActions;
@@ -35,7 +36,7 @@ public class PlayerController : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         Debug.Log(
-            $"Player spawn | ClientId={OwnerClientId} | IsOwner={IsOwner} | Escena={gameObject.scene.name}");
+            $"Player spawn | ClientId={OwnerClientId} | IsOwner={IsOwner} | IsHost={IsHost}");
 
         StartCoroutine(
             WaitForSpawnManager());
@@ -64,13 +65,60 @@ public class PlayerController : NetworkBehaviour
             yield return null;
         }
 
-        transform.position =
+        Vector3 spawnPosition =
             PlayerSpawnManager.Instance
                 .GetSpawnPosition(
                     OwnerClientId);
 
+        CharacterController controller =
+            GetComponent<CharacterController>();
+
+        if (controller != null)
+        {
+            controller.enabled = false;
+        }
+
+        transform.position = spawnPosition;
+        transform.rotation = Quaternion.identity;
+
+        if (controller != null)
+        {
+            controller.enabled = true;
+        }
+
+        stamina.ResetStamina();
+
         Debug.Log(
             $"Jugador {OwnerClientId} movido al spawn correcto.");
+    }
+
+    [ClientRpc]
+    public void TeleportClientRpc(
+        Vector3 position)
+    {
+        Debug.Log(
+            $"TeleportClientRpc recibido en Player {OwnerClientId}");
+
+        CharacterController controller =
+            GetComponent<CharacterController>();
+
+        if (controller != null)
+        {
+            controller.enabled = false;
+        }
+
+        transform.position = position;
+        transform.rotation = Quaternion.identity;
+
+        if (controller != null)
+        {
+            controller.enabled = true;
+        }
+
+        stamina.ResetStamina();
+
+        Debug.Log(
+            $"Teleport aplicado en client {OwnerClientId} -> {position}");
     }
 
     public override void OnNetworkDespawn()
@@ -100,19 +148,13 @@ public class PlayerController : NetworkBehaviour
         if (!MatchManager.Instance.IsMatchActive())
             return;
 
-        bool canSprint =
-            sprintPressed &&
-            stamina.HasEnough(
-                sprintCostPerSecond * Time.deltaTime);
+        bool sprinting = false;
 
-        movement.Move(
-            moveInput,
-            canSprint);
-
-        if (canSprint)
+        if (sprintPressed)
         {
-            stamina.Consume(
-                sprintCostPerSecond * Time.deltaTime);
+            sprinting =
+                stamina.Consume(
+                    sprintCostPerSecond * Time.deltaTime);
         }
         else
         {
@@ -120,33 +162,43 @@ public class PlayerController : NetworkBehaviour
                 staminaRegenPerSecond);
         }
 
+        movement.Move(
+            moveInput,
+            sprinting);
+
         if (dashPressed)
         {
             dashPressed = false;
 
             if (dash.TryDash(stamina))
             {
-                Debug.Log("Dash ejecutado");
+                Debug.Log(
+                    $"Dash ejecutado | Player {OwnerClientId}");
             }
         }
     }
 
-    private void OnMove(InputAction.CallbackContext context)
+    private void OnMove(
+        InputAction.CallbackContext context)
     {
-        moveInput = context.ReadValue<Vector2>();
+        moveInput =
+            context.ReadValue<Vector2>();
     }
 
-    private void OnSprintPerformed(InputAction.CallbackContext context)
+    private void OnSprintPerformed(
+        InputAction.CallbackContext context)
     {
         sprintPressed = true;
     }
 
-    private void OnSprintCanceled(InputAction.CallbackContext context)
+    private void OnSprintCanceled(
+        InputAction.CallbackContext context)
     {
         sprintPressed = false;
     }
 
-    private void OnDashPerformed(InputAction.CallbackContext context)
+    private void OnDashPerformed(
+        InputAction.CallbackContext context)
     {
         dashPressed = true;
     }
