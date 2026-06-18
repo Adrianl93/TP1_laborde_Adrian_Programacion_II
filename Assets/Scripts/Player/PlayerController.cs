@@ -170,7 +170,15 @@ public class PlayerController : NetworkBehaviour
         {
             dashPressed = false;
 
-            if (dash.TryDash(stamina))
+            Vector3 dashDirection =
+            new Vector3(
+             moveInput.x,
+             0f,
+            moveInput.y);
+
+            if (dash.TryDash(
+                    stamina,
+                    dashDirection))
             {
                 Debug.Log(
                     $"Dash ejecutado | Player {OwnerClientId}");

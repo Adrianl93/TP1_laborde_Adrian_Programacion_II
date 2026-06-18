@@ -123,10 +123,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
+  m_Radius: 0.56135607
+  m_Height: 2.1113791
   m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: -0.005566597, y: 0.0000436306, z: 0}
 --- !u!143 &8922449515952297130
 CharacterController:
   m_ObjectHideFlags: 0
@@ -278,8 +278,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f87bce3e939a084082aed33a8c315ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerDash
+  ShowTopMostFoldoutHeaderGroup: 1
   dashCooldown: 5
   dashCost: 25
+  dashSpeed: 10
+  dashDuration: 0.25
+  hitRadius: 3
 --- !u!114 &461476272330126770
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -294,6 +298,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInventory
   ShowTopMostFoldoutHeaderGroup: 1
   carriedItemVisual: {fileID: 3504085677580291231}
+  value1Prefab: {fileID: 3818015417923819507, guid: 25739998a30e72f43ba80c4397a7aa6d, type: 3}
+  value3Prefab: {fileID: 7446036483679959754, guid: 82473cdd33616344d875c8f0ab93aa01, type: 3}
+  value5Prefab: {fileID: 5782038170199201210, guid: 9c0d2da47addaaa4c9e3a9049ff81817, type: 3}
+  dropRadius: 4
 --- !u!114 &5862631514716371653
 MonoBehaviour:
   m_ObjectHideFlags: 0

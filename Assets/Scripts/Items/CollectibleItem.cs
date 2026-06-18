@@ -18,4 +18,11 @@ public class CollectibleItem : NetworkBehaviour
     {
         return spawnPointIndex;
     }
+
+    public void SetValue(int newValue)
+    {
+        value = newValue;
+    }
+
+
 }
