@@ -20,6 +20,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Coin Icon
       objectReference: {fileID: 0}
+    - target: {fileID: 8576588691579002132, guid: e74df661cbbba8b449a3e18cbf9d72f9, type: 3}
+      propertyPath: rotationSpeed
+      value: 160
+      objectReference: {fileID: 0}
     - target: {fileID: 8821409252485331860, guid: e74df661cbbba8b449a3e18cbf9d72f9, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.7

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerSpawnManager : MonoBehaviour
@@ -11,6 +12,11 @@ public class PlayerSpawnManager : MonoBehaviour
     [SerializeField]
     private Transform[] spawnPoints;
 
+    private Dictionary<ulong, int> playerSpawnIndexes =
+        new Dictionary<ulong, int>();
+
+    private int nextSpawnIndex = 0;
+
     private void Awake()
     {
         Instance = this;
@@ -23,15 +29,42 @@ public class PlayerSpawnManager : MonoBehaviour
             spawnPoints.Length == 0)
         {
             Debug.LogError(
-                "PlayerSpawnManager no tiene SpawnPoints configurados.");
+                "No hay spawn points.");
 
             return Vector3.zero;
         }
 
-        int index =
-            (int)(clientId %
-            (ulong)spawnPoints.Length);
+        if (playerSpawnIndexes.ContainsKey(clientId))
+        {
+            int existingIndex =
+                playerSpawnIndexes[clientId];
 
-        return spawnPoints[index].position;
+            return spawnPoints[existingIndex].position;
+        }
+
+        
+        int assignedIndex =
+            nextSpawnIndex % spawnPoints.Length;
+
+        playerSpawnIndexes.Add(
+            clientId,
+            assignedIndex);
+
+        nextSpawnIndex++;
+
+        Debug.Log(
+            $"Spawn asignado -> Client {clientId} => Spawn {assignedIndex}");
+
+        return spawnPoints[assignedIndex].position;
+    }
+
+    public void ResetSpawns()
+    {
+        playerSpawnIndexes.Clear();
+
+        nextSpawnIndex = 0;
+
+        Debug.Log(
+            "SpawnManager reseteado");
     }
 }
