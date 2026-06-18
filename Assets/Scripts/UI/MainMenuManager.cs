@@ -41,9 +41,22 @@ public class MainMenuManager : MonoBehaviour
         if (exitButton != null)
             exitButton.onClick.RemoveListener(ExitGame);
     }
+    private void ResetPreviousSession()
+    {
+        if (NetworkManager.Singleton != null)
+        {
+            NetworkManager.Singleton.Shutdown();
+        }
 
+        if (PlayerSpawnManager.Instance != null)
+        {
+            PlayerSpawnManager.Instance.ResetSpawns();
+        }
+    }
     private void StartHost()
     {
+        ResetPreviousSession();
+
         UnityTransport transport =
             NetworkManager.Singleton
                 .GetComponent<UnityTransport>();
@@ -73,6 +86,7 @@ public class MainMenuManager : MonoBehaviour
 
     private void StartClient()
     {
+        ResetPreviousSession();
         string ip =
             ipInputField.text.Trim();
 
