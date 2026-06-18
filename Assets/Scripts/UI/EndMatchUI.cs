@@ -1,7 +1,6 @@
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class EndMatchUI : MonoBehaviour
@@ -72,18 +71,28 @@ public class EndMatchUI : MonoBehaviour
     }
 
     private void OnMatchStateChanged(
-        MatchState previousState,
-        MatchState newState)
+    MatchState previousState,
+    MatchState newState)
     {
+        if (newState == MatchState.Countdown)
+        {
+            panel.SetActive(false);
+            return;
+        }
+
         if (newState != MatchState.Finished)
             return;
 
-        ShowResults();
+        StartCoroutine(
+            WaitForResultsSync());
     }
 
     private void ShowResults()
     {
         panel.SetActive(true);
+
+        replayButton.interactable =
+            NetworkManager.Singleton.IsHost;
 
         PlayerScore[] scores =
             FindObjectsByType<PlayerScore>(
@@ -91,27 +100,33 @@ public class EndMatchUI : MonoBehaviour
 
         foreach (PlayerScore score in scores)
         {
-            if (score.PlayerId == 0)
+            Debug.Log(
+                $"UI SCORE -> Player {score.PlayerNumber} = {score.Score}");
+
+            if (score.PlayerNumber == 1)
             {
                 scoreP1Text.text =
-                    score.Score.ToString();
+                    $"Score: {score.Score}";
             }
-            else if (score.PlayerId == 1)
+            else if (score.PlayerNumber == 2)
             {
                 scoreP2Text.text =
-                    score.Score.ToString();
+                    $"Score: {score.Score}";
             }
         }
+
+        Debug.Log(
+            $"UI RESULT -> Tie={MatchManager.Instance.IsTie} | Winner={MatchManager.Instance.WinnerPlayerNumber}");
 
         if (MatchManager.Instance.IsTie)
         {
             winnerText.text =
-                "EMPATE";
+                "It's a Tie";
         }
         else
         {
             winnerText.text =
-                $"GANADOR: JUGADOR {MatchManager.Instance.WinnerPlayerId + 1}";
+                $"Winner: Player {MatchManager.Instance.WinnerPlayerNumber}";
         }
     }
 
@@ -120,11 +135,34 @@ public class EndMatchUI : MonoBehaviour
         if (!NetworkManager.Singleton.IsHost)
             return;
 
-        NetworkManager.Singleton
-            .SceneManager
-            .LoadScene(
-                "GameScene",
-                LoadSceneMode.Single);
+        panel.SetActive(false);
+
+        winnerText.text = "";
+        scoreP1Text.text = "";
+        scoreP2Text.text = "";
+
+        StopAllCoroutines();
+
+        MatchManager.Instance
+            .RestartMatch();
+    }
+
+    private System.Collections.IEnumerator WaitForResultsSync()
+    {
+        Debug.Log(
+            "Esperando sincronización de resultados...");
+
+        while (
+            !MatchManager.Instance.IsTie &&
+            MatchManager.Instance.WinnerPlayerNumber == -1)
+        {
+            yield return null;
+        }
+
+        Debug.Log(
+            $"Resultados sincronizados | Winner={MatchManager.Instance.WinnerPlayerNumber} | Tie={MatchManager.Instance.IsTie}");
+
+        ShowResults();
     }
 
     private void ReturnToMenu()
@@ -135,8 +173,8 @@ public class EndMatchUI : MonoBehaviour
                 .Shutdown();
         }
 
-        SceneManager.LoadScene(
-            "MainMenu");
+        UnityEngine.SceneManagement.SceneManager
+            .LoadScene("MainMenu");
     }
 
     private void ExitGame()

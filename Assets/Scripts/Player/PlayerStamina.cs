@@ -2,16 +2,21 @@ using UnityEngine;
 
 public class PlayerStamina : MonoBehaviour
 {
-    [SerializeField] private float maxStamina = 100f;
+    [SerializeField]
+    private float maxStamina = 50f;
 
     private float currentStamina;
 
-    public float CurrentStamina => currentStamina;
-    public float MaxStamina => maxStamina;
+    public float CurrentStamina =>
+        currentStamina;
+
+    public float MaxStamina =>
+        maxStamina;
 
     private void Awake()
     {
-        currentStamina = maxStamina;
+        currentStamina =
+            maxStamina;
     }
 
     public bool HasEnough(float amount)
@@ -26,17 +31,30 @@ public class PlayerStamina : MonoBehaviour
 
         currentStamina -= amount;
 
+        currentStamina =
+            Mathf.Clamp(
+                currentStamina,
+                0f,
+                maxStamina);
+
         return true;
     }
 
     public void Regenerate(float amountPerSecond)
     {
-        currentStamina += amountPerSecond * Time.deltaTime;
+        currentStamina +=
+            amountPerSecond * Time.deltaTime;
 
         currentStamina =
             Mathf.Clamp(
                 currentStamina,
                 0f,
                 maxStamina);
+    }
+
+    public void ResetStamina()
+    {
+        currentStamina =
+            maxStamina;
     }
 }
